@@ -31,6 +31,22 @@ class Component
 
   has_dom_class "foo"
   has_dom_class :class_name
+  has_dom_class -> { "component--width_#{width}" }
+  has_dom_class -> { "component--open" }, if: :open?
+  has_dom_class "if", if: :if?
+  has_dom_class "unless", unless: :unless?
+
+  def class_name
+    "component--class"
+  end
+
+  def width
+    :m
+  end
+
+  def open?
+    true
+  end
 
   def if?
     true
@@ -39,16 +55,12 @@ class Component
   def unless?
     true
   end
-
-  def styles
-    OpenStruct.new(class_name: ".class_name", other_class_name: ".other_class_name")
-  end
 end
 
 class HasDomAttrsTest < Minitest::Test
   def test_has_dom_attr
     component = Component.new(attr_value: "Jens Jensen")
-    dom_attrs = component.send(:dom_attrs)
+    dom_attrs = component.dom_attrs
 
     assert_equal dom_attrs[:attr_value], "Jens Jensen"
     assert_equal dom_attrs[:attr_value_spec], "Je"
@@ -58,7 +70,7 @@ class HasDomAttrsTest < Minitest::Test
 
   def test_has_dom_aria
     component = Component.new(aria_value: "Jens Jensen")
-    dom_aria = component.send(:dom_aria)
+    dom_aria = component.dom_aria
 
     assert_equal dom_aria[:aria_value], "Jens Jensen"
     assert_equal dom_aria[:aria_value_spec], "Je"
@@ -68,7 +80,7 @@ class HasDomAttrsTest < Minitest::Test
 
   def test_has_dom_data
     component = Component.new(data_value: "Jens Jensen")
-    dom_data = component.send(:dom_data)
+    dom_data = component.dom_data
 
     assert_equal dom_data[:data_value], "Jens Jensen"
     assert_equal dom_data[:data_value_spec], "Je"
@@ -78,9 +90,13 @@ class HasDomAttrsTest < Minitest::Test
 
   def test_has_dom_class
     component = Component.new
-    dom_classes = component.send(:dom_classes)
+    dom_classes = component.dom_classes
 
     assert_includes dom_classes, "foo"
-    assert_includes dom_classes, "class_name"
+    assert_includes dom_classes, "component--class"
+    assert_includes dom_classes, "component--width_m"
+    assert_includes dom_classes, "component--open"
+    assert_includes dom_classes, "if"
+    refute_includes dom_classes, "unless"
   end
 end

@@ -31,8 +31,8 @@ module HasDomAttrs
           define_method :dom_classes do
             cond = options[:if] || options[:unless]
             cond_value = case cond
-                          when Proc then instance_exec(&cond)
-                          when Symbol, String then send(cond)
+                         when Proc then instance_exec(&cond)
+                         when Symbol, String then send(cond)
             end
 
             if cond && options.key?(:if)
@@ -45,9 +45,9 @@ module HasDomAttrs
 
             super().tap do |classes|
               classes << case value
-                          when Proc then instance_exec(&value)
-                          when Symbol then styles.send(value)&.delete_prefix(".")
-                          else value
+                         when Proc then instance_exec(&value)
+                         when Symbol then send(value)
+                         else value
               end
             end
           end
@@ -63,8 +63,8 @@ module HasDomAttrs
           define_method method_name do
             cond = options[:if] || options[:unless]
             cond_value = case cond
-                          when Proc then instance_exec(&cond)
-                          when Symbol, String then send(cond)
+                         when Proc then instance_exec(&cond)
+                         when Symbol, String then send(cond)
             end
 
             if cond && options.key?(:if)
@@ -77,9 +77,9 @@ module HasDomAttrs
 
             super().tap do |data|
               data[name] = case value
-                            when Proc then instance_exec(&value)
-                            when Symbol, String then send(value)
-                            else send(name)
+                           when Proc then instance_exec(&value)
+                           when Symbol, String then send(value)
+                           else send(name)
               end
             end
           end
@@ -87,8 +87,6 @@ module HasDomAttrs
       )
     end
   end
-
-  private
 
   def dom_attrs
     {
