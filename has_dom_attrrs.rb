@@ -104,10 +104,8 @@ module Modulor
           @dom_classes ||= self.class
               .ancestors
               .select { |cls| cls < Modulor::Component }
-              .map(&:styles)
-              .compact
-              .map(&:root)
-              .compact
+              .filter_map(&:styles)
+              .filter_map(&:root)
               .reverse
         end
 

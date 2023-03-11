@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "ostruct"
 
@@ -65,7 +67,7 @@ class HasDomAttrsTest < Minitest::Test
     assert_equal dom_attrs[:attr_value], "Jens Jensen"
     assert_equal dom_attrs[:attr_value_spec], "Je"
     assert dom_attrs.key?(:attr_value_if)
-    refute dom_attrs.key?(:attr_value_unless)
+    assert_not dom_attrs.key?(:attr_value_unless)
   end
 
   def test_has_dom_aria
@@ -75,7 +77,7 @@ class HasDomAttrsTest < Minitest::Test
     assert_equal dom_aria[:aria_value], "Jens Jensen"
     assert_equal dom_aria[:aria_value_spec], "Je"
     assert dom_aria.key?(:aria_value_if)
-    refute dom_aria.key?(:aria_value_unless)
+    assert_not dom_aria.key?(:aria_value_unless)
   end
 
   def test_has_dom_data
@@ -85,7 +87,7 @@ class HasDomAttrsTest < Minitest::Test
     assert_equal dom_data[:data_value], "Jens Jensen"
     assert_equal dom_data[:data_value_spec], "Je"
     assert dom_data.key?(:data_value_if)
-    refute dom_data.key?(:data_value_unless)
+    assert_not dom_data.key?(:data_value_unless)
   end
 
   def test_has_dom_class
@@ -97,6 +99,6 @@ class HasDomAttrsTest < Minitest::Test
     assert_includes dom_classes, "component--width_m"
     assert_includes dom_classes, "component--open"
     assert_includes dom_classes, "if"
-    refute_includes dom_classes, "unless"
+    assert_not_includes dom_classes, "unless"
   end
 end

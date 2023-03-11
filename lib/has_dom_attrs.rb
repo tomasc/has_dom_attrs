@@ -56,36 +56,35 @@ module HasDomAttrs
     end
 
     private
+      def prepend___has_dom___method(method_name, name, value = nil, **options)
+        prepend(
+          Module.new do
+            define_method method_name do
+              cond = options[:if] || options[:unless]
+              cond_value = case cond
+                           when Proc then instance_exec(&cond)
+                           when Symbol, String then send(cond)
+              end
 
-    def prepend___has_dom___method(method_name, name, value = nil, **options)
-      prepend(
-        Module.new do
-          define_method method_name do
-            cond = options[:if] || options[:unless]
-            cond_value = case cond
-                         when Proc then instance_exec(&cond)
-                         when Symbol, String then send(cond)
-            end
+              if cond && options.key?(:if)
+                return super() unless cond_value
+              end
 
-            if cond && options.key?(:if)
-              return super() unless cond_value
-            end
+              if cond && options.key?(:unless)
+                return super() if cond_value
+              end
 
-            if cond && options.key?(:unless)
-              return super() if cond_value
-            end
-
-            super().tap do |data|
-              data[name] = case value
-                           when Proc then instance_exec(&value)
-                           when Symbol, String then send(value)
-                           else send(name)
+              super().tap do |data|
+                data[name] = case value
+                             when Proc then instance_exec(&value)
+                             when Symbol, String then send(value)
+                             else send(name)
+                end
               end
             end
           end
-        end
-      )
-    end
+        )
+      end
   end
 
   def dom_attrs
