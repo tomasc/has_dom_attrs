@@ -1,5 +1,7 @@
 # HasDomAttrs
 
+[![HasDomAttrs](https://github.com/tomasc/has_dom_attrs/actions/workflows/ruby.yml/badge.svg)](https://github.com/tomasc/has_dom_attrs/actions/workflows/ruby.yml)
+
 Helper methods for dealing with html element attributes.
 
 ## Installation
