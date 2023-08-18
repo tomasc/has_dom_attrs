@@ -62,7 +62,7 @@ class ModalComponent
 
   has_dom_attr :open
   has_dom_class -> { "modal--width_#{width}" }
-  has_dom_aria :aria_modal, if: :open
+  has_dom_aria :modal, if: :open
   has_dom_data :width
 
   attr_reader :open
