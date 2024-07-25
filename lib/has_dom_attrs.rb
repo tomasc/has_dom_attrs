@@ -55,6 +55,10 @@ module HasDomAttrs
       )
     end
 
+    def has_dom_style(name, value = nil, **options)
+      prepend___has_dom___method(:dom_style, name, value, **options)
+    end
+
     private
       def prepend___has_dom___method(method_name, name, value = nil, **options)
         prepend(
@@ -92,7 +96,7 @@ module HasDomAttrs
       aria: dom_aria,
       class: dom_classes,
       data: dom_data,
-      style: dom_style
+      style: dom_style.to_s
     }.reject { |_, v| v.nil? || v.empty? }
       .deep_stringify_keys
       .deep_transform_keys(&:dasherize)
@@ -111,6 +115,14 @@ module HasDomAttrs
   end
 
   def dom_style
-    nil
+    DomStyle.new({})
+  end
+
+  class DomStyle < SimpleDelegator
+    def to_s
+      __getobj__.reject { |_, value| value.nil? }
+                .map { |key, value| "#{key.to_s.dasherize}: #{value};" }
+                .join(" ")
+    end
   end
 end

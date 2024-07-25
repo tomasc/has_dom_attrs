@@ -54,7 +54,7 @@ component.dom_attrs
 # => { open: "true" }
 ```
 
-Likewise you can set classes, data, and aria attributes:
+Likewise you can set classes, data, style, and aria attributes:
 
 ```ruby
 class ModalComponent
@@ -64,6 +64,7 @@ class ModalComponent
   has_dom_class -> { "modal--width_#{width}" }
   has_dom_aria :modal, if: :open
   has_dom_data :width
+  has_dom_style :font_size, -> { "12px" }
 
   attr_reader :open
 
@@ -77,7 +78,7 @@ end
 ```ruby
 component = ModalComponent.new(open: true, width: :l)
 component.dom_attrs
-# => { open: "true", class: "modal--width_l", aria: { modal: true }, data: { width: "l" } }
+# => { open: "true", aria: { modal: true }, class: "modal--width_l", data: { width: "l" }, style: "font-size: 12px; }
 ```
 
 ## Development

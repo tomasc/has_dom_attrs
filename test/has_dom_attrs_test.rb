@@ -38,25 +38,35 @@ class Component
   has_dom_class "if", if: :if?
   has_dom_class "unless", unless: :unless?
 
-  def class_name
-    "component--class"
-  end
+  has_dom_style :height
+  has_dom_style :font_size, -> { "12px" }
+  has_dom_style :color, -> { "red" }, if: :if?
+  has_dom_style :background_color, -> { "blue" }, unless: :unless?
 
-  def width
-    :m
-  end
+  private
+    def class_name
+      "component--class"
+    end
 
-  def open?
-    true
-  end
+    def width
+      :m
+    end
 
-  def if?
-    true
-  end
+    def height
+      "100vh"
+    end
 
-  def unless?
-    true
-  end
+    def open?
+      true
+    end
+
+    def if?
+      true
+    end
+
+    def unless?
+      true
+    end
 end
 
 class HasDomAttrsTest < Minitest::Test
@@ -64,30 +74,30 @@ class HasDomAttrsTest < Minitest::Test
     component = Component.new(attr_value: "Jens Jensen")
     dom_attrs = component.dom_attrs
 
-    assert_equal dom_attrs[:attr_value], "Jens Jensen"
-    assert_equal dom_attrs[:attr_value_spec], "Je"
+    assert_equal "Jens Jensen", dom_attrs[:attr_value]
+    assert_equal "Je", dom_attrs[:attr_value_spec]
     assert dom_attrs.key?(:attr_value_if)
-    refute dom_attrs.key?(:attr_value_unless)
+    assert dom_attrs.key?(:attr_value_unless) == false
   end
 
   def test_has_dom_aria
     component = Component.new(aria_value: "Jens Jensen")
     dom_aria = component.dom_aria
 
-    assert_equal dom_aria[:aria_value], "Jens Jensen"
-    assert_equal dom_aria[:aria_value_spec], "Je"
+    assert_equal "Jens Jensen", dom_aria[:aria_value]
+    assert_equal "Je", dom_aria[:aria_value_spec]
     assert dom_aria.key?(:aria_value_if)
-    refute dom_aria.key?(:aria_value_unless)
+    assert dom_aria.key?(:aria_value_unless) == false
   end
 
   def test_has_dom_data
     component = Component.new(data_value: "Jens Jensen")
     dom_data = component.dom_data
 
-    assert_equal dom_data[:data_value], "Jens Jensen"
-    assert_equal dom_data[:data_value_spec], "Je"
+    assert_equal "Jens Jensen", dom_data[:data_value]
+    assert_equal "Je", dom_data[:data_value_spec]
     assert dom_data.key?(:data_value_if)
-    refute dom_data.key?(:data_value_unless)
+    assert dom_data.key?(:data_value_unless) == false
   end
 
   def test_has_dom_class
@@ -99,6 +109,16 @@ class HasDomAttrsTest < Minitest::Test
     assert_includes dom_classes, "component--width_m"
     assert_includes dom_classes, "component--open"
     assert_includes dom_classes, "if"
-    refute_includes dom_classes, "unless"
+    assert dom_classes.include?("unless") == false
+  end
+
+  def test_has_dom_style
+    component = Component.new
+    dom_style = component.dom_style
+
+    assert_includes dom_style.to_s, "height: 100vh;"
+    assert_includes dom_style.to_s, "font-size: 12px;"
+    assert_includes dom_style.to_s, "color: red;"
+    assert dom_style.to_s.include?("background-color: blue;") == false
   end
 end
