@@ -49,7 +49,7 @@ end
 ```
 
 ```ruby
-component = Component.new(open: true)
+component = DetailsComponent.new(open: true)
 component.dom_attrs
 # => { open: "true" }
 ```
@@ -66,7 +66,7 @@ class ModalComponent
   has_dom_data :width
   has_dom_style :font_size, -> { "12px" }
 
-  attr_reader :open
+  attr_reader :open, :width
 
   def initialize(open: false, width: :m)
     @open = open
@@ -78,7 +78,7 @@ end
 ```ruby
 component = ModalComponent.new(open: true, width: :l)
 component.dom_attrs
-# => { open: "true", aria: { modal: true }, class: "modal--width_l", data: { width: "l" }, style: "font-size: 12px; }
+# => { open: "true", aria: { modal: true }, class: "modal--width_l", data: { width: "l" }, style: "font-size: 12px;" }
 ```
 
 ## Development
