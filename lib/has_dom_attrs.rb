@@ -6,6 +6,9 @@ require "active_support/core_ext/hash/keys"
 require "active_support/core_ext/string/inflections"
 
 module HasDomAttrs
+  EMPTY_ARRAY = [].freeze
+  EMPTY_HASH = {}.freeze
+
   class << self
     def included(base)
       base.extend ClassMethods
@@ -43,13 +46,13 @@ module HasDomAttrs
               return super() if cond_value
             end
 
-            super().tap do |classes|
-              classes << case value
-                         when Proc then instance_exec(&value)
-                         when Symbol then send(value)
-                         else value
-              end
+            resolved = case value
+                       when Proc then instance_exec(&value)
+                       when Symbol then send(value)
+                       else value
             end
+
+            super() + [resolved]
           end
         end
       )
@@ -78,13 +81,13 @@ module HasDomAttrs
                 return super() if cond_value
               end
 
-              super().tap do |data|
-                data[name] = case value
-                             when Proc then instance_exec(&value)
-                             when Symbol, String then send(value)
-                             else send(name)
-                end
+              resolved = case value
+                         when Proc then instance_exec(&value)
+                         when Symbol, String then send(value)
+                         else send(name)
               end
+
+              super().merge(name => resolved)
             end
           end
         )
@@ -92,37 +95,45 @@ module HasDomAttrs
   end
 
   def dom_attrs
-    {
-      aria: dom_aria,
-      class: dom_classes,
-      data: dom_data,
-      style: dom_style.to_s
-    }.reject { |_, v| v.nil? || v.empty? }
-      .deep_stringify_keys
-      .deep_transform_keys(&:dasherize)
+    result = {}
+    aria = dom_aria
+    result["aria"] = aria.transform_keys { |k| k.to_s.dasherize } unless aria.empty?
+    classes = dom_classes
+    result["class"] = classes unless classes.empty?
+    data = dom_data
+    result["data"] = data.transform_keys { |k| k.to_s.dasherize } unless data.empty?
+    style = dom_style.to_s
+    result["style"] = style unless style.empty?
+    result
   end
 
   def dom_classes
-    []
+    EMPTY_ARRAY
   end
 
   def dom_aria
-    {}
+    EMPTY_HASH
   end
 
   def dom_data
-    {}
+    EMPTY_HASH
   end
 
   def dom_style
-    DomStyle.new({})
+    EMPTY_STYLE
   end
 
   class DomStyle < SimpleDelegator
+    def merge(other)
+      DomStyle.new(__getobj__.merge(other))
+    end
+
     def to_s
       __getobj__.reject { |_, value| value.nil? }
                 .map { |key, value| "#{key.to_s.dasherize}: #{value};" }
                 .join(" ")
     end
   end
+
+  EMPTY_STYLE = DomStyle.new(EMPTY_HASH).freeze
 end
